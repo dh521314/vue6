@@ -28,7 +28,7 @@
               <a href="https://github.com/merciqiao/vuejiaoxue.git" target="_blank">
                 <el-dropdown-item >Git地址</el-dropdown-item>
               </a>
-              
+              <el-dropdown-item command="updatePwd">修改密码</el-dropdown-item>
               <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -93,6 +93,8 @@ export default {
        }
        else if(command=='aboult'){
          this.$message('QQ群:73110051');
+       }else if(command=='updatePwd'){
+         this.$router.replace('/uep');
        }
       }
   }
