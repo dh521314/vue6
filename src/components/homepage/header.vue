@@ -25,6 +25,7 @@
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="aboult">关于作者</el-dropdown-item>
+              <el-dropdown-item command="EmpManager">个人资料</el-dropdown-item>
               <a href="https://github.com/merciqiao/vuejiaoxue.git" target="_blank">
                 <el-dropdown-item >Git地址</el-dropdown-item>
               </a>
@@ -95,6 +96,8 @@ export default {
          this.$message('QQ群:73110051');
        }else if(command=='updatePwd'){
          this.$router.replace('/uep');
+       }else if (command=='EmpManager'){
+         this.$router.replace('/em');
        }
       }
   }

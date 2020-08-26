@@ -77,6 +77,15 @@ const router = new Router({
             title: '作家管理',
             role: ['小说管理员', '人事管理员', '超级管理员']
           }
+        },
+        {
+          path: '/em',
+          name: 'em',
+          component: () => import('../components/admin/EmpManager'),
+          meta: {
+            title: '个人资料',
+            role: ['小说管理员', '人事管理员', '超级管理员']
+          }
         }
       ]
     },
