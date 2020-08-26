@@ -91,7 +91,21 @@ export default {
               icon: "el-icon-document"
             }
           ]
+        },
+        {
+          icon: "el-icon-tickets",
+          path: "tablepage",
+          title: "作家管理",
+          subs: [
+            {
+              page: true,
+              path: "writer",
+              title: "作家管理",
+              icon: "el-icon-document"
+            }
+          ]
         }
+
       ]
     };
   },

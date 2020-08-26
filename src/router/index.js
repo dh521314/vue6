@@ -68,6 +68,15 @@ const router = new Router({
             title: '修改密码',
             role: ['小说管理员', '人事管理员', '超级管理员']
           }
+        },
+        {
+          path: '/writer',
+          name: 'writer',
+          component: () => import('../components/admin/writer'),
+          meta: {
+            title: '作家管理',
+            role: ['小说管理员', '人事管理员', '超级管理员']
+          }
         }
       ]
     },
