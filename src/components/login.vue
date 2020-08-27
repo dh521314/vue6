@@ -3,7 +3,7 @@
   <div class="_login">
     <!--login内框-->
     <div class="login_inner">
-      <el-form class="form" ref="form" :model="formLogin">
+      <el-form class="form" ref="form" :model="formLogin" v-loading="loading">
         <el-form-item>
           <h2 class="title">爱阅小说管理系统</h2>
         </el-form-item>
@@ -14,7 +14,7 @@
           <el-input v-model="formLogin.password" placeholder="密码" show-password></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="login">登陆</el-button>
+          <el-button type="primary" @click="login()">登陆</el-button>
           <div v-show="this.errorInfo.isShowError" class="error">{{this.errorInfo.text}}</div>
         </el-form-item>
       </el-form>
@@ -61,6 +61,7 @@
     name: "login",
     data() {
       return {
+        loading: false,
         formLogin: {
           loginName: "daihui",
           password: "66668888"
@@ -82,6 +83,7 @@
     },
     methods: {
       login() {
+        this.loading=true;
         this.$http
           .post(`http://localhost:8088/aiyue/Emp/login?ename=${this.formLogin.loginName}&epwd=${this.formLogin.password}`)
           .then(response => {

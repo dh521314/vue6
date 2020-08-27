@@ -1,17 +1,17 @@
 <template>
   <div>
-    <el-table border :data="mes" stripe height="700px">
-      <el-table-column label="编号" prop="tid"></el-table-column>
+    <el-table border :data="mes" stripe height="700px" v-loading="loading">
+      <el-table-column label="编号" prop="meid"></el-table-column>
       <el-table-column label="名称" prop="mename"></el-table-column>
       <el-table-column label="小说类型" prop="typeid"></el-table-column>
       <el-table-column label="封面图" prop="surface"></el-table-column>
-      <el-table-column label="小说简介" prop="synopsis"></el-table-column>
-      <el-table-column label="作家" prop="wid"></el-table-column>
-      <el-table-column label="操作" width="80px">
+      <el-table-column label="小说简介" prop="synopsis" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column label="作家" prop="writerid"></el-table-column>
+      <el-table-column label="操作" width="160px">
         <!-- scope：返回当前单元格 -->
         <template slot-scope="scope">
-          <el-button type="success" @click="show(scope.row)">编辑</el-button>
-          <el-button type="warning" @click="del(scope.row.tid)">删除</el-button>
+          <el-button type="success" size="mini" @click="show(scope.row)">编辑</el-button>
+          <el-button type="warning" size="mini" @click="del(scope.row.tid)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -36,26 +36,28 @@
       <el-form :model="me" label-width="100px">
         <div id="tid" hidden>
           <el-form-item label="编号">
-            <el-input v-model="me.tid" readonly></el-input>
+            <el-input v-model="me.meid" readonly></el-input>
           </el-form-item>
         </div>
         <el-form-item label="名称">
           <el-input v-model="me.mename"></el-input>
         </el-form-item>
         <el-form-item label="小说类型">
-          <el-select v-model="me.typeid">
-            <el-option label="1" :value="0"></el-option>
-            <el-option label="2" :value="1"></el-option>
+          <el-select v-model="me.typeid" >
+            <el-option v-for="type in types"
+                       :key="type.tid"
+                       :label="type.tname"
+                       :value="type.tid"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="封面图">
           <el-input v-model="me.surface"></el-input>
         </el-form-item>
         <el-form-item label="简介">
-          <el-input v-model="me.synopsis"></el-input>
+          <el-input type="textarea" v-model="me.synopsis" :autosize="{ minRows: 2, maxRows: 10}"></el-input>
         </el-form-item>
         <el-form-item label="作家">
-          <el-input v-model="me.wid"></el-input>
+          <el-input v-model="me.writerid"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -72,10 +74,12 @@
     name: "message",
     data() {
       return {
+        loading:true,
         dialogFormVisible: false,
         title: '',
         me: {},
         mes: [],
+        types:[],
         // 分页用到的数据
         currentPage: 1,
         pageSize: 10,
@@ -84,27 +88,33 @@
     }
     , created(){
       this.selectAll(1,10);
+      this.$http.post("http://localhost:8088/aiyue/Type/findAll").then((resp)=> {
+        this.types = resp.data;
+      });
+      setTimeout(function(){},3000);
+      this.loading = false;
     }
     ,methods:{
       show: function (row) {
+        console.log("row"+row)
         if (row == null) {
           // 添加
           this.title = '新增';
           this.dialogFormVisible = true;
-          this.type = {};
+          this.me = {};
         } else {
+          // 复制
+          this.me = Object.assign({},row);
           // 修改
           this.title = '修改';
 
           this.dialogFormVisible = true;
           document.getElementById("tid").removeAttribute("hidden");
 
-          // 复制
-          this.type = Object.assign({},row);
         }
       },
       del:function(tid){
-        this.$http.post(`http://localhost:8088/aiyue/Message/delMessage?tid=${tid}`).then((resp)=>{
+        this.$http.post(`http://localhost:8088/aiyue/Message/delMessage?meid=${this.me.meid}`).then((resp)=>{
           if(resp.data > 0){
             this.selectAll(1,this.pageSize);
           }else{
@@ -113,11 +123,8 @@
         });
       },
       sub:function(){
-        let tid = this.type.tid;
-        let tname = this.type.tname;
-        let channel = this.type.channel;
         if(this.title == "新增"){
-          this.$http.post(`http://localhost:8088/aiyue/Message/addMessage?name=${tname}&channel=${channel}`).then((resp)=>{
+          this.$http.post(`http://localhost:8088/aiyue/Message/addMessage?typeid=${this.me.typeid}&mename=${this.me.mename}&surface=${this.me.surface}&synopsis=${this.me.synopsis}&writerid=${this.me.writerid}`).then((resp)=>{
             if(resp.data > 0) {
               this.selectAll(1,this.pageSize);
             }else{
@@ -125,7 +132,7 @@
             }
           });
         }else{
-          this.$http.post(`http://localhost:8088/aiyue/Message/updMessage?tid=${tid}&tname=${tname}&channel=${channel}`).then((resp)=>{
+          this.$http.post(`http://localhost:8088/aiyue/Message/updMessage?meid=${this.me.meid}&typeid=${this.me.typeid}&mename=${this.me.mename}&surface=${this.me.surface}&synopsis=${this.me.synopsis}&writerid=${this.me.writerid}`).then((resp)=>{
             if(resp.data > 0) {
               this.selectAll(1,this.pageSize);
             }else{
@@ -142,7 +149,7 @@
       },
       selectAll:function(num,size){
         this.$http.post("http://localhost:8088/aiyue/Message/findAll?num="+num+"&size="+size).then((resp)=>{
-          this.types = resp.data.list;
+          this.mes = resp.data.list;
           console.log(resp.data);
           this.total = resp.data.total;
           this.currentPage = resp.data.pageNum;
@@ -162,6 +169,6 @@
   }
 </script>
 
-<style scoped>
-
+<style ang="scss">
+  .el-tooltip__popper{max-width: 400px}
 </style>
