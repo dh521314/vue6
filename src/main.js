@@ -33,7 +33,7 @@ Vue.use(Vuex)
 //5.引入moment,表格日期格式化
 import moment from 'moment'
 Vue.prototype.$moment=moment;//设置到vue原型属性,调用方式this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
-
+Vue.prototype.$axios = axios;
 
 //包引用------end
 

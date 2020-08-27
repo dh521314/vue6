@@ -61,6 +61,15 @@ const router = new Router({
           }
         },
         {
+          path: '/employee',
+          name: 'employee',
+          component:()=> import('../components/admin/Employee'),
+          meta: {
+            title: "员工管理",
+            role: ['小说管理员', '人事管理员', '超级管理员']
+          }
+        },
+        {
           path: '/uep',
           name: 'uep',
           component: () => import('../components/admin/UpdateEmpPwd'),

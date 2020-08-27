@@ -81,6 +81,19 @@ export default {
         },
         {
           icon: "el-icon-tickets",
+          path: "p_employee",
+          title: "员工管理",
+          subs: [
+            {
+              page: true,
+              path: "employee",
+              title: "员工管理",
+              icon: "el-icon-document"
+            }
+          ]
+        },
+        {
+          icon: "el-icon-tickets",
           path: "p_xs",
           title: "小说管理",
           subs: [
