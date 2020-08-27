@@ -89,6 +89,12 @@ export default {
               path: "type",
               title: "小说类型管理",
               icon: "el-icon-document"
+            },
+            {
+              page: true,
+              path: "message",
+              title: "小说信息管理",
+              icon: "el-icon-document"
             }
           ]
         },

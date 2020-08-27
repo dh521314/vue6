@@ -86,6 +86,15 @@ const router = new Router({
             title: '个人资料',
             role: ['小说管理员', '人事管理员', '超级管理员']
           }
+        },
+        {
+          path: '/message',
+          name: 'message',
+          component: () => import('../components/admin/message'),
+          meta: {
+            title: '小说信息管理',
+            role: ['小说管理员', '人事管理员', '超级管理员']
+          }
         }
       ]
     },
@@ -126,7 +135,6 @@ router.beforeEach((to, from, next) => {
     } else {
       next('403');
     }
-
   }
 })
 /**
@@ -135,6 +143,8 @@ router.beforeEach((to, from, next) => {
 axios.interceptors.request.use(
   config => {
     console.log('>>>请求url:', config.url);
+    config.headers['Page-Title'] = encodeURIComponent(router.history.current.meta.title)
+    config.headers['Content-Type'] = 'application/json;charset=UTF-8'
     var headers = config.headers;
     if (sessionStorage.getItem("token")) {
       headers.token = sessionStorage.getItem("token");
@@ -150,9 +160,10 @@ axios.defaults.timeout = 5000;//毫秒
 /**
  * 应答拦截器,添加请求头token
  */
-axios.interceptors.response.use(function (response) {
+axios.interceptors.response.use(response=>{
   // Do something with response data
   console.log('<<<请求成功');
+  console.log(response);
   return response;
 }, error => {
   // Do something with response error

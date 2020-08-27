@@ -90,7 +90,9 @@
             if (json.length > 0) {
               var userInfo = json[0];
               var position = json[1];
-
+              sessionStorage.setItem("userRealName", userInfo.realname); //真实姓名
+              // 删除对象中的属性
+              delete userInfo.realname;
               //保存登陆信息
               sessionStorage.setItem("userName", userInfo.ename); //用户名
               sessionStorage.setItem("token", JSON.stringify(userInfo)); //保存用户
