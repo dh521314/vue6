@@ -2,26 +2,35 @@
   <div>
     <!--查询-->
     <el-button type="primary" @click="show()" style="float:left">添加</el-button>
-      <el-input v-model="list.realname" placeholder="姓名" style="width:500px; heght:30px;"></el-input>
-      <el-button type="success" icon="el-icon-search" @click="getName"></el-button>
+    <el-input v-model="list.realname" placeholder="姓名" style="width:500px; heght:30px;"></el-input>
+    <el-button type="success" icon="el-icon-search" @click="getName"></el-button>
     <el-table :data="list.slice((currentPage-1)*pagesize,currentPage*pagesize)">
-      <el-table-column prop="eid" label="编号" ></el-table-column>
-      <el-table-column prop="ename" label="账号" ></el-table-column>
-      <el-table-column prop="epwd" label="密码" ></el-table-column>
-      <el-table-column prop="realname" label="姓名" ></el-table-column>
-      <el-table-column prop="idcard"  label="身份证号" ></el-table-column>
-      <el-table-column prop="ephoto" label="头像" ></el-table-column>
-      <el-table-column prop="ephone" label="手机号" ></el-table-column>
-      <el-table-column prop="email" label="邮箱" ></el-table-column>
-      <el-table-column prop="pname" label="职位" >
 
-      </el-table-column>
+      <el-table-column prop="eid" label="编号" ></el-table-column>
+
+      <el-table-column prop="ename" label="账号" ></el-table-column>
+
+      <el-table-column prop="epwd" label="密码" ></el-table-column>
+
+      <el-table-column prop="realname" label="姓名" ></el-table-column>
+
+      <el-table-column prop="idcard"  label="身份证号" ></el-table-column>
+
+      <el-table-column prop="ephoto" label="头像" ></el-table-column>
+
+      <el-table-column prop="ephone" label="手机号" ></el-table-column>
+
+      <el-table-column prop="email" label="邮箱" ></el-table-column>
+
+      <el-table-column prop="pname" label="职位" ></el-table-column>
+
       <el-table-column prop="state" label="状态">
         <template slot-scope="scope">
           <span v-if="scope.row.state==0">在职</span>
           <span v-if="scope.row.state==1">离职</span>
         </template>
       </el-table-column>
+
       <el-table-column label="操作" width="210px">
         <template slot-scope="scope">
           <el-button round size="mini"
@@ -57,14 +66,14 @@
 
     <!--添加-->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
-      <el-form :model="employees" label-width="100px" ref="form" >
-        <el-form-item label="账号">
+      <el-form :model="employees" label-width="100px" label-suffix="：" :rules="rules" ref="form" >
+        <el-form-item label="账号" prop="ename">
           <el-input v-model="employees.ename"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="epwd">
           <el-input v-model="employees.epwd" show-password></el-input>
         </el-form-item>
-        <el-form-item label="职位">
+        <el-form-item label="职位" prop="postid">
           <el-select v-model="employees.postid" placeholder="请选择">
             <el-option
               v-for="item in posts"
@@ -84,12 +93,42 @@
 </template>
 
 <script>
-  import Qs from 'qs';
   export default {
     name: 'Employee',
     data(){
       return{
         employees: {},
+        rules:{
+          ename: [
+            {required:true,message:'用户名不能为空'},
+            { validator (rule, value, callback, source, options) {
+              const errors = [];
+              var pattern = new RegExp("[`~!@#$^&*=|{}':;',\\[\\]<>《》/?~！@#￥……&*|{}【】‘；：”“'。，、？' ']");
+              if(pattern.test(value)){
+                errors.push('不支持特殊字符')
+              }else if(value.indexOf(" ") != -1){
+                errors.push('不支持特殊字符')
+              }
+              callback(errors)
+            } }
+          ],
+          epwd:[
+            {required:true,message:'密码不能为空'},
+            { validator (rule, value, callback, source, options) {
+                const errors = [];
+                var pattern = new RegExp("[`~!@#$^&*=|{}':;',\\[\\]<>《》/?~！@#￥……&*|{}【】‘；：”“'。，、？' ']");
+                if(pattern.test(value)){
+                  errors.push('不支持特殊字符')
+                }else if(value.indexOf(" ") != -1){
+                  errors.push('不支持特殊字符')
+                }
+                callback(errors)
+              } }
+          ],
+          postid:[
+            {required:true,message:'职位不能为空'}
+          ]
+        },
         dialogFormVisible:false,
         title:"",
         list:[],
@@ -127,23 +166,30 @@
           })
       },
       addorupdate:function () {
-        if (this.title==="添加"){
-          let ename = this.employees.ename;
-          let epwd = this.employees.epwd;
-          let postid = this.employees.postid;
-          this.$http.post(`http://localhost:8088/aiyue/Emp/addEmp?ename=${ename}&epwd=${epwd}&postid=${postid}&state=0`)
-            .then(res =>{
-              if(res.data === 1) {
-                alert("添加成功！")
-                this.dialogFormVisible=false;
-                this.query();
-              }else if(res.data === 2){
-                this.$message.info("已存在");
-              }else{
-                this.$message.info("添加失败");
-              }
-            })
-        }
+        let ename = this.employees.ename;
+        let epwd = this.employees.epwd;
+        let postid = this.employees.postid;
+
+        this.$refs['form'].validate(valid=>{
+          if (valid){
+            if (1==1){
+              this.$http.post(`http://localhost:8088/aiyue/Emp/addEmp?ename=${ename}&epwd=${epwd}&postid=${postid}&state=0`)
+                .then(res => {
+                  if (res.data === 1) {
+                    alert("添加成功！");
+                    this.dialogFormVisible = false;
+                    this.query();
+                  } else if (res.data === 2) {
+                    this.$message.info("已存在");
+                  } else {
+                    this.$message.info("添加失败");
+                  }
+                })
+            }else {
+              this.$message.info("请输入正确的用户名或密码");
+            }
+          }
+        })
       },
       updateEmpPwd:function(eid){
         this.$http.post(`http://localhost:8088/aiyue/Emp/updateEmpPwd?eid=${eid}&epwd=66668888`,)
@@ -167,6 +213,9 @@
         this.$http.post(`http://localhost:8088/aiyue/Emp/findName?realname=${this.list.realname}`)
           .then(res =>{
             this.list = res.data;
+            if (this.list === ""){
+              this.query();
+            }
           })
       }
     }
