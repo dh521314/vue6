@@ -1,5 +1,32 @@
 <template>
   <div>
+    <el-form
+      :inline="true"
+      :model="formSearch"
+      ref="formSearch"
+      class="demo-form-inline"
+      label-width="68px"
+    >
+      <el-form-item class="form_input" label="昵称" prop="name">
+        <el-input v-model="formSearch.name" placeholder="小说名称"></el-input>
+      </el-form-item>
+      <el-form-item class="form_select" label="类别" prop="type">
+        <el-select v-model="formSearch.type" placeholder="类别">
+          <el-option label="请选择" value=""></el-option>
+          <el-option v-for="type in types"
+                     :key="type.tid"
+                     :label="type.tname"
+                     :value="type.tid"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSearch">查询</el-button>
+        <el-button type="warning" @click="onReset" plain>重置</el-button>
+      </el-form-item>
+    </el-form>
+
+
+
     <el-table border :data="mes" stripe height="700px" v-loading="loading">
       <el-table-column label="编号" prop="meid"></el-table-column>
       <el-table-column label="名称" prop="mename"></el-table-column>
@@ -36,13 +63,11 @@
 
     <el-button type="primary" @click="show()">添加</el-button>
 
-    <el-dialog :title="title" :visible.sync="dialogFormVisible">
+    <el-dialog :title="title" :model="me" :visible.sync="dialogFormVisible" @close="close">
       <el-form label-width="100px">
-        <div id="tid" hidden>
-          <el-form-item label="编号">
+          <el-form-item label="编号" id="tid" :style="display">
             <el-input v-model="me.meid" readonly></el-input>
           </el-form-item>
-        </div>
         <el-form-item label="名称">
           <el-input v-model="me.mename"></el-input>
         </el-form-item>
@@ -61,7 +86,13 @@
           <el-input type="textarea" v-model="me.synopsis" :autosize="{ minRows: 3, maxRows: 10}"></el-input>
         </el-form-item>
         <el-form-item label="作家">
-          <el-input v-model="me.writerid"></el-input>
+<!--          <el-input v-model="me.writerid"></el-input>-->
+          <el-select v-model="me.writerid" >
+            <el-option v-for="item in writes"
+                       :key="item.wid"
+                       :label="item.wname"
+                       :value="item.wid"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -84,6 +115,15 @@
         me: {},
         mes: [],
         types:[],
+        writes:[],
+        formSearch: {
+          name: "",
+          type: "",
+          gender: null,
+          startdate: null, //开始时间
+          enddate: null ,//结束时间
+        },
+        display:"display:none;",
         // 分页用到的数据
         currentPage: 1,
         pageSize: 10,
@@ -95,8 +135,11 @@
       this.$http.post("http://localhost:8088/aiyue/Type/findAll").then((resp)=> {
         this.types = resp.data;
       });
-      setTimeout(function(){},3000);
-      this.loading = false;
+      this.$http.post('http://localhost:8088/aiyue/writer/writerQuery')
+        .then(res=>{
+          this.writes = res.data;
+          this.loading = false;
+        });
     }
     ,methods:{
       show: function (row) {
@@ -113,9 +156,31 @@
           this.title = '修改';
 
           this.dialogFormVisible = true;
-          document.getElementById("tid").removeAttribute("hidden");
-
+          //document.getElementById("tid").style.display = "block";
+          this.display = "display:block;";
         }
+      },
+      close:function(){
+        document.getElementById("file1").value = null;
+        this.dialogFormVisible = false;
+        // document.getElementById("tid").style.display = "none";
+        this.display = "display:none;";
+      },
+      onSearch(){
+        console.log(this.formSearch);
+        let formData = new FormData();
+        formData.append("mename",this.formSearch.name);
+        formData.append("typeid",this.formSearch.type);
+        this.$http.post("http://localhost:8088/aiyue/Message/findAll",formData).then(resp=>{
+          this.mes = resp.data.list;
+          console.log(resp.data);
+          this.total = resp.data.total;
+          this.currentPage = resp.data.pageNum;
+        });
+      },
+      onReset() {
+        //重置
+        this.$refs["formSearch"].resetFields();
       },
       del:function(tid){
         this.$http.post(`http://localhost:8088/aiyue/Message/delMessage?meid=`+tid).then((resp)=>{
@@ -155,11 +220,6 @@
           });
         }
         //清空文件筐
-        document.getElementById("file1").value = null;
-        this.dialogFormVisible = false;
-        document.getElementById("tid").setAttribute("hidden","hidden");
-      },
-      close:function(){
         document.getElementById("file1").value = null;
         this.dialogFormVisible = false;
         document.getElementById("tid").setAttribute("hidden","hidden");
