@@ -34,6 +34,9 @@ Vue.use(Vuex)
 import moment from 'moment'
 Vue.prototype.$moment=moment;//设置到vue原型属性,调用方式this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
 Vue.prototype.$axios = axios;
+// 6 引入qs
+import qs from 'qs';
+Vue.prototype.$qs = qs;
 
 //包引用------end
 

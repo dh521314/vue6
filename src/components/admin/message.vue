@@ -4,14 +4,18 @@
       <el-table-column label="编号" prop="meid"></el-table-column>
       <el-table-column label="名称" prop="mename"></el-table-column>
       <el-table-column label="小说类型" prop="typeid"></el-table-column>
-      <el-table-column label="封面图" prop="surface"></el-table-column>
+      <el-table-column label="封面图">
+        <template slot-scope="scope">
+          　　　　<img :src="'http://localhost:8088/aiyue'+scope.row.surface" width="60" height="80" class="head_pic"/>
+          　　</template>
+      </el-table-column>
       <el-table-column label="小说简介" prop="synopsis" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="作家" prop="writerid"></el-table-column>
       <el-table-column label="操作" width="160px">
         <!-- scope：返回当前单元格 -->
         <template slot-scope="scope">
           <el-button type="success" size="mini" @click="show(scope.row)">编辑</el-button>
-          <el-button type="warning" size="mini" @click="del(scope.row.tid)">删除</el-button>
+          <el-button type="warning" size="mini" @click="del(scope.row.meid)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -33,7 +37,7 @@
     <el-button type="primary" @click="show()">添加</el-button>
 
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
-      <el-form :model="me" label-width="100px">
+      <el-form label-width="100px">
         <div id="tid" hidden>
           <el-form-item label="编号">
             <el-input v-model="me.meid" readonly></el-input>
@@ -51,10 +55,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="封面图">
-          <el-input v-model="me.surface"></el-input>
+            <input type="file" id="file1" ref="file1"></input>
         </el-form-item>
         <el-form-item label="简介">
-          <el-input type="textarea" v-model="me.synopsis" :autosize="{ minRows: 2, maxRows: 10}"></el-input>
+          <el-input type="textarea" v-model="me.synopsis" :autosize="{ minRows: 3, maxRows: 10}"></el-input>
         </el-form-item>
         <el-form-item label="作家">
           <el-input v-model="me.writerid"></el-input>
@@ -114,7 +118,7 @@
         }
       },
       del:function(tid){
-        this.$http.post(`http://localhost:8088/aiyue/Message/delMessage?meid=${this.me.meid}`).then((resp)=>{
+        this.$http.post(`http://localhost:8088/aiyue/Message/delMessage?meid=`+tid).then((resp)=>{
           if(resp.data > 0){
             this.selectAll(1,this.pageSize);
           }else{
@@ -123,8 +127,17 @@
         });
       },
       sub:function(){
+        let config = {headers: {'Content-Type':'multipart/form-data'}};
+        var formData = new FormData();
+
+        formData.append("typeid",this.me.typeid);
+        formData.append("mename",this.me.mename);
+        formData.append("surface",this.$refs.file1.files[0]);
+        formData.append("synopsis",this.me.synopsis);
+        formData.append("writerid",this.me.writerid);
+
         if(this.title == "新增"){
-          this.$http.post(`http://localhost:8088/aiyue/Message/addMessage?typeid=${this.me.typeid}&mename=${this.me.mename}&surface=${this.me.surface}&synopsis=${this.me.synopsis}&writerid=${this.me.writerid}`).then((resp)=>{
+          this.$http.post(`http://localhost:8088/aiyue/Message/addMessage`,formData,config).then((resp)=>{
             if(resp.data > 0) {
               this.selectAll(1,this.pageSize);
             }else{
@@ -132,7 +145,8 @@
             }
           });
         }else{
-          this.$http.post(`http://localhost:8088/aiyue/Message/updMessage?meid=${this.me.meid}&typeid=${this.me.typeid}&mename=${this.me.mename}&surface=${this.me.surface}&synopsis=${this.me.synopsis}&writerid=${this.me.writerid}`).then((resp)=>{
+          formData.append("meid",this.me.meid);
+          this.$http.post(`http://localhost:8088/aiyue/Message/updMessage`,formData,config).then((resp)=>{
             if(resp.data > 0) {
               this.selectAll(1,this.pageSize);
             }else{
@@ -140,15 +154,18 @@
             }
           });
         }
+        //清空文件筐
+        document.getElementById("file1").value = null;
         this.dialogFormVisible = false;
         document.getElementById("tid").setAttribute("hidden","hidden");
       },
       close:function(){
+        document.getElementById("file1").value = null;
         this.dialogFormVisible = false;
         document.getElementById("tid").setAttribute("hidden","hidden");
       },
       selectAll:function(num,size){
-        this.$http.post("http://localhost:8088/aiyue/Message/findAll?num="+num+"&size="+size).then((resp)=>{
+        this.$http.post("http://localhost:8088/aiyue/Message/findAll",this.$qs.stringify({num:num,size:size})).then((resp)=>{
           this.mes = resp.data.list;
           console.log(resp.data);
           this.total = resp.data.total;
