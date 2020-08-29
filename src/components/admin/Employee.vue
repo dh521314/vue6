@@ -2,8 +2,10 @@
   <div>
     <!--查询-->
     <el-button type="primary" @click="show()" style="float:left">添加</el-button>
-    <el-input v-model="list.realname" placeholder="姓名" style="width:500px; heght:30px;"></el-input>
-    <el-button type="success" icon="el-icon-search" @click="getName"></el-button>
+    <div style="text-align: center">
+      <el-input v-model="list.realname" placeholder="请输入姓名" style="width:500px; heght:30px;"></el-input>
+      <el-button type="success" icon="el-icon-search" @click="getName"></el-button>
+    </div>
     <el-table :data="list.slice((currentPage-1)*pagesize,currentPage*pagesize)">
 
       <el-table-column prop="eid" label="编号" ></el-table-column>
@@ -212,10 +214,12 @@
       getName(){
         this.$http.post(`http://localhost:8088/aiyue/Emp/findName?realname=${this.list.realname}`)
           .then(res =>{
-            this.list = res.data;
-            if (this.list === ""){
+            if (res.data ==""){
               this.query();
+            }else {
+              this.list = res.data;
             }
+
           })
       }
     }
