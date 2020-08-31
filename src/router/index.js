@@ -104,6 +104,15 @@ const router = new Router({
             title: '小说信息管理',
             role: ['小说管理员', '人事管理员', '超级管理员']
           }
+        },
+        {
+          path: '/section',
+          name: 'section',
+          component: () => import('../components/admin/Section'),
+          meta: {
+            title: '章节管理',
+            role: ['小说管理员', '人事管理员', '超级管理员']
+          }
         }
       ]
     },
