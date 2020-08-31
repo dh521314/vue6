@@ -6,7 +6,7 @@
       <el-input v-model="list.realname" placeholder="请输入姓名" style="width:500px; heght:30px;"></el-input>
       <el-button type="success" icon="el-icon-search" @click="getName"></el-button>
     </div>
-    <el-table :data="list.slice((currentPage-1)*pagesize,currentPage*pagesize)">
+    <el-table :data="list">
 
       <el-table-column prop="eid" label="编号" ></el-table-column>
 
@@ -24,7 +24,8 @@
 
       <el-table-column prop="email" label="邮箱" ></el-table-column>
 
-      <el-table-column prop="pname" label="职位" ></el-table-column>
+      <el-table-column prop="post.pname" label="职位" >
+      </el-table-column>
 
       <el-table-column prop="state" label="状态">
         <template slot-scope="scope">
@@ -63,7 +64,7 @@
       :page-sizes="[5, 10, 15, 20]"
       :page-size="pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="list.length">
+      :total="parseInt(total)">
     </el-pagination>
 
     <!--添加-->
@@ -135,11 +136,13 @@
         title:"",
         list:[],
         posts:{},
+        //分页的数据
         currentPage:1,
         pagesize:10,
+        total:0
       }
     },created () {
-        this.query(),
+        this.query(1,10),
         this.$http.post(`http://localhost:8088/aiyue/Post/findPost?pid=${this.posts.pid}&pname=${this.posts.pname}`)
           .then(res =>{
             this.posts = res.data;
@@ -153,19 +156,21 @@
           this.employees = {ename:"",epwd: "66668888"};
         }
       },
-      handleSizeChange: function (size) {
-        this.pagesize = size;
-        console.log(this.pagesize)
+      handleSizeChange: function (newSize) {
+        this.pagesize = newSize;
+        this.query(this.currentPage,this.pagesize)
       },
-      handleCurrentChange: function(currentPage){
-        this.currentPage = currentPage;
-        console.log(this.currentPage)
+      handleCurrentChange: function(newPage){
+        this.currentPage = newPage;
+        this.query(this.currentPage,this.pagesize)
       },
-      query:function(){
-        this.$http.post("http://localhost:8088/aiyue/Emp/findAll")
+      query:function(num,size){
+        this.$http.post("http://localhost:8088/aiyue/Emp/findAll?num="+num+"&size="+size)
           .then(res => {
-            this.list = res.data;
-          })
+            this.list = res.data.list;
+            this.total = res.data.total;
+            this.currentPage = res.data.pageNum;
+          });
       },
       addorupdate:function () {
         let ename = this.employees.ename;
@@ -178,9 +183,9 @@
               this.$http.post(`http://localhost:8088/aiyue/Emp/addEmp?ename=${ename}&epwd=${epwd}&postid=${postid}&state=0`)
                 .then(res => {
                   if (res.data === 1) {
-                    alert("添加成功！");
+                    this.$message.info("添加成功！");
                     this.dialogFormVisible = false;
-                    this.query();
+                    this.query(this.currentPage,this.pagesize);
                   } else if (res.data === 2) {
                     this.$message.info("已存在");
                   } else {
@@ -196,26 +201,26 @@
       updateEmpPwd:function(eid){
         this.$http.post(`http://localhost:8088/aiyue/Emp/updateEmpPwd?eid=${eid}&epwd=66668888`,)
           .then(res=>{
-            this.query();
+            this.query(this.currentPage,this.pagesize);
           })
       },
       zaizhi:function (eid) {
         this.$http.post(`http://localhost:8088/aiyue/Emp/updateEmp?eid=${eid}&state=0`)
           .then(res=>{
-            this.query();
+            this.query(this.currentPage,this.pagesize);
           })
       },
       lizhi:function (eid) {
         this.$http.post(`http://localhost:8088/aiyue/Emp/updateEmp?eid=${eid}&state=1`)
           .then(res=>{
-            this.query();
+            this.query(this.currentPage,this.pagesize);
           })
       },
       getName(){
         this.$http.post(`http://localhost:8088/aiyue/Emp/findName?realname=${this.list.realname}`)
           .then(res =>{
             if (res.data ==""){
-              this.query();
+              this.query(this.currentPage,this.pagesize);
             }else {
               this.list = res.data;
             }
