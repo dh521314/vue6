@@ -110,6 +110,8 @@
           })
 
           .catch(error => {
+            this.$message.error("服务错误，重新登录");
+            this.loading = false;
             console.log("失败报文:", error);
             this.errorInfo.isShowError = true;
             this.errorInfo.text = "系统接口异常";
