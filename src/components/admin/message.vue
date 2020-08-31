@@ -30,14 +30,14 @@
     <el-table border :data="mes" stripe height="700px" v-loading="loading">
       <el-table-column label="编号" prop="meid"></el-table-column>
       <el-table-column label="名称" prop="mename"></el-table-column>
-      <el-table-column label="小说类型" prop="typeid"></el-table-column>
+      <el-table-column label="小说类型" prop="type.tname"></el-table-column>
       <el-table-column label="封面图">
         <template slot-scope="scope">
           　　　　<img :src="'http://localhost:8088/aiyue'+scope.row.surface" width="60" height="80" class="head_pic"/>
           　　</template>
       </el-table-column>
       <el-table-column label="小说简介" prop="synopsis" :show-overflow-tooltip="true"></el-table-column>
-      <el-table-column label="作家" prop="writerid"></el-table-column>
+      <el-table-column label="作家" prop="writer.wname"></el-table-column>
       <el-table-column label="操作" width="160px">
         <!-- scope：返回当前单元格 -->
         <template slot-scope="scope">
@@ -103,7 +103,7 @@
 
   </div>
 </template>
-
+.
 <script>
   export default {
     name: "message",
