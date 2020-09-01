@@ -220,6 +220,7 @@
         this.$http.post(`http://localhost:8088/aiyue/Emp/findName?realname=${this.list.realname}`)
           .then(res =>{
             if (res.data ==""){
+              this.$message.info("没有此员工")
               this.query(this.currentPage,this.pagesize);
             }else {
               this.list = res.data;
