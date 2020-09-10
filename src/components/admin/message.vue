@@ -225,7 +225,11 @@
         document.getElementById("tid").setAttribute("hidden","hidden");
       },
       selectAll:function(num,size){
-        this.$http.post("http://localhost:8088/aiyue/Message/findAll",this.$qs.stringify({num:num,size:size})).then((resp)=>{
+        var fm = new FormData();
+        fm.append("num",num);
+        fm.append("size",size);
+        this.$http.post("http://localhost:8088/aiyue/Message/findAll",fm)
+          .then((resp)=>{
           this.mes = resp.data.list;
           console.log(resp.data);
           this.total = resp.data.total;

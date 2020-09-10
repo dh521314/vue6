@@ -109,12 +109,12 @@
         handleSizeChange:function(newSize){
           // pagesize改变触发
           this.pageSize = newSize;
-          this.selectAll(this.currentPage,this.pageSize)
+          this.sectionList(this.currentPage,this.pageSize)
         },
         handleCurrentChange(newPage) {
           // 页码改变触发
           this.currentPage = newPage;
-          this.selectAll(this.currentPage,this.pageSize)
+          this.sectionList(this.currentPage,this.pageSize)
         },
         sectionList:function (num,size) {
           this.$http.post("http://localhost:8088/aiyue/Section/pageFind?num="+num+"&size="+size).then((resp)=>{
