@@ -3,7 +3,7 @@
     <!--查询-->
     <el-button type="primary" @click="show()" style="float:left">添加</el-button>
     <div style="text-align: center">
-      <el-input v-model="list.realname" placeholder="请输入姓名" style="width:500px; heght:30px;"></el-input>
+      <el-input v-model="list.realname" placeholder="请输入姓名" style="width:260px; heght:30px;"></el-input>
       <el-button type="success" icon="el-icon-search" @click="getName"></el-button>
     </div>
     <el-table :data="list">
@@ -129,7 +129,7 @@
               } }
           ],
           postid:[
-            {required:true,message:'职位不能为空'}
+           {required:true,message:'职位不能为空'}
           ]
         },
         dialogFormVisible:false,
@@ -153,7 +153,7 @@
         if (row == null){
           this.title = "添加";
           this.dialogFormVisible = true;
-          this.employees = {ename:"",epwd: "66668888"};
+          this.employees = {epwd: "66668888"};
         }
       },
       handleSizeChange: function (newSize) {
@@ -220,6 +220,7 @@
         this.$http.post(`http://localhost:8088/aiyue/Emp/findName?realname=${this.list.realname}`)
           .then(res =>{
             if (res.data ==""){
+              this.$message.info("没有此员工")
               this.query(this.currentPage,this.pagesize);
             }else {
               this.list = res.data;
