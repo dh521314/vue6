@@ -38,13 +38,13 @@
       </el-table-column>
       <el-table-column label="小说简介" prop="synopsis" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column label="作家" prop="writer.wname"></el-table-column>
-      <el-table-column label="操作" width="160px">
-        <!-- scope：返回当前单元格 -->
+      <!--<el-table-column label="操作" width="160px">
+        &lt;!&ndash; scope：返回当前单元格 &ndash;&gt;
         <template slot-scope="scope">
           <el-button type="success" size="mini" @click="show(scope.row)">编辑</el-button>
           <el-button type="warning" size="mini" @click="del(scope.row.meid)">删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
 
     <div>
@@ -61,7 +61,7 @@
 
     </div>
 
-    <el-button type="primary" @click="show()">添加</el-button>
+    <!--<el-button type="primary" @click="show()">添加</el-button>-->
 
     <el-dialog :title="title" :model="me" :visible.sync="dialogFormVisible" @close="close">
       <el-form label-width="100px">

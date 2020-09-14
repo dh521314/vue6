@@ -1,16 +1,16 @@
 <template>
   <div>
-    <el-button round size="mini" type="success" @click="show()">添加</el-button>
+    <!--<el-button round size="mini" type="success" @click="show()">添加</el-button>-->
     <el-table :data="list">
       <el-table-column label="编号" prop="wid"></el-table-column>
       <el-table-column label="作家笔名" prop="wname"></el-table-column>
       <el-table-column label="头像" prop="wphoto"></el-table-column>
       <el-table-column label="作家语录" prop="ana"></el-table-column>
-      <el-table-column label="操作">
+      <!--<el-table-column label="操作">
         <template slot-scope="scope">
           <el-button round size="mini" type="success" @click="show(scope.row)">修改</el-button>
         </template>
-      </el-table-column>
+      </el-table-column>-->
     </el-table>
 
     <div>
